@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Learning — Hyderabad Truth Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/tabler-icons.min.css" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sans: 'Inter', system-ui, sans-serif;
+  --bg:   #ffffff;
+  --bg2:  #f7f6f3;
+  --text: #111110;
+  --muted:#6b6b68;
+  --hint: #a8a8a5;
+  --border: rgba(0,0,0,0.10);
+  --border-em: rgba(0,0,0,0.20);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:   #1a1a18;
+    --bg2:  #222220;
+    --text: #f0efec;
+    --muted:#9a9a97;
+    --hint: #555553;
+    --border: rgba(255,255,255,0.10);
+    --border-em: rgba(255,255,255,0.20);
+  }
+}
+body {
+  font-family: var(--sans);
+  font-size: 16px;
+  color: var(--text);
+  background: var(--bg);
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+  line-height: 1.7;
+}
+a { color: inherit; }
+
+.goal-bar {
+  padding: 2rem 0 1.25rem;
+  border-bottom: 0.5px solid var(--border);
+  margin-bottom: 2.5rem;
+}
+.goal-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hint);
+  margin-bottom: 6px;
+}
+.goal-text {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 280px;
+  gap: 2.5rem;
+}
+@media (max-width: 680px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+.section-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hint);
+  margin-bottom: 1rem;
+}
+
+.sprint-nav {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+  cursor: pointer;
+  margin-bottom: 1.25rem;
+  max-width: 280px;
+}
+
+.sprint-card {
+  background: var(--bg2);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+}
+.sprint-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.sprint-name { font-size: 14px; font-weight: 500; }
+.sprint-date { font-size: 12px; color: var(--hint); }
+.progress-bar-bg {
+  height: 4px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--text);
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+.progress-text { font-size: 12px; color: var(--hint); margin-bottom: 10px; }
+.sprint-tasks { list-style: none; }
+.sprint-task {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 4px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 4px;
+  user-select: none;
+}
+.sprint-task:hover { color: var(--text); }
+.sprint-task.done { color: var(--hint); text-decoration: line-through; }
+.task-check {
+  width: 14px; height: 14px;
+  border: 0.5px solid var(--border-em);
+  border-radius: 3px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.sprint-task.done .task-check { background: var(--text); border-color: var(--text); }
+.sprint-task.done .task-check::after {
+  content: '';
+  width: 7px; height: 5px;
+  border-left: 1.5px solid var(--bg);
+  border-bottom: 1.5px solid var(--bg);
+  transform: rotate(-45deg) translateY(-1px);
+  display: block;
+}
+
+.note-item {
+  padding: 1rem 0;
+  border-bottom: 0.5px solid var(--border);
+}
+.note-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.note-date { font-size: 12px; color: var(--hint); }
+.note-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 0.5px solid var(--border);
+  color: var(--muted);
+}
+.note-body { font-size: 14px; color: var(--text); line-height: 1.65; }
+
+.add-note-area {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.add-note-area textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--text);
+  resize: none;
+  line-height: 1.6;
+}
+.add-note-footer { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.tag-sel {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+}
+.add-btn {
+  margin-left: auto;
+  font-size: 13px;
+  padding: 5px 14px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border-em);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--sans);
+  cursor: pointer;
+}
+.add-btn:hover { background: var(--bg2); }
+
+.why-card {
+  background: var(--bg2);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.why-card p { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 10px; }
+.why-card p:last-child { margin-bottom: 0; }
+.why-card strong { font-weight: 500; color: var(--text); }
+
+.stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.5rem; }
+.stat-box { background: var(--bg2); border-radius: var(--radius-md); padding: 0.75rem 1rem; text-align: center; }
+.stat-num { font-size: 22px; font-weight: 500; color: var(--text); }
+.stat-lbl { font-size: 11px; color: var(--hint); margin-top: 2px; }
+
+.links { display: flex; flex-direction: column; gap: 8px; }
+.links a {
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+.links a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="goal-bar">
+  <div class="goal-label">The mission</div>
+  <div class="goal-text">Map what Hyderabad actually looks like — not what the official records say.</div>
+</div>
+
+<div class="layout">
+  <div class="main">
+    <div class="section-label">Sprint progress</div>
+
+    <select class="sprint-nav" id="sprintSel" onchange="switchSprint(this.value)">
+      <option value="0">Sprint 1 — Scaffold &amp; data model</option>
+      <option value="1">Sprint 2 — Map viewer</option>
+      <option value="2">Sprint 3 — Report flow</option>
+    </select>
+
+    <div class="sprint-card">
+      <div class="sprint-header">
+        <span class="sprint-name" id="sName"></span>
+        <span class="sprint-date" id="sDate"></span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="sBar"></div></div>
+      <div class="progress-text" id="sProgress"></div>
+      <ul class="sprint-tasks" id="sTaskList"></ul>
+    </div>
+
+    <div class="section-label">Learning feed</div>
+    <div id="noteFeed"></div>
+
+    <div class="add-note-area">
+      <textarea id="noteInput" rows="3" placeholder="What did you just figure out? What surprised you?"></textarea>
+      <div class="add-note-footer">
+        <select class="tag-sel" id="tagSel">
+          <option>geospatial</option>
+          <option>supabase</option>
+          <option>react</option>
+          <option>data</option>
+          <option>design</option>
+          <option>ops</option>
+          <option>insight</option>
+        </select>
+        <button class="add-btn" onclick="addNote()">Add note →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="section-label">What I'm building &amp; why</div>
+    <div class="why-card">
+      <p>Hyderabad's official maps <strong>don't match the ground.</strong> Water bodies are encroached, roads are unclassified, slums are invisible. This project exists to close that gap.</p>
+      <p>It's also a <strong>learning project.</strong> PostGIS, MapLibre, satellite NDWI — all new territory. The map is the excuse; the skills are the point.</p>
+      <p>If the data gets good enough, it may be useful to urban planners, journalists, and residents. But that's not the constraint for v1.</p>
+    </div>
+
+    <div class="section-label">Progress at a glance</div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-num" id="totalNotes">0</div><div class="stat-lbl">notes logged</div></div>
+      <div class="stat-box"><div class="stat-num" id="totalDone">0</div><div class="stat-lbl">tasks done</div></div>
+      <div class="stat-box"><div class="stat-num" id="totalSprints">3</div><div class="stat-lbl">sprints planned</div></div>
+      <div class="stat-box"><div class="stat-num" id="daysIn">1</div><div class="stat-lbl">days in</div></div>
+    </div>
+
+    <div class="section-label">Links</div>
+    <div class="links">
+      <a href="https://github.com/SumanthVarma798/hyderabad-truth-map" target="_blank">
+        <i class="ti ti-brand-github" aria-hidden="true"></i> GitHub repo
+      </a>
+      <a href="https://github.com/users/SumanthVarma798/projects/11" target="_blank">
+        <i class="ti ti-layout-kanban" aria-hidden="true"></i> Project board
+      </a>
+      <a href="/docs/architecture.md">
+        <i class="ti ti-file-text" aria-hidden="true"></i> Architecture doc
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+const sprints = [
+  {
+    name: 'Sprint 1 — Scaffold & data model',
+    date: 'Jun 24 – Jul 7, 2026',
+    tasks: [
+      { text: 'Create GitHub repo + project board', done: true },
+      { text: 'Write architecture doc', done: true },
+      { text: 'Initialise Supabase project + enable PostGIS', done: false },
+      { text: 'Define observations + official_zones schema', done: false },
+      { text: 'Scaffold React + Vite + MapLibre hello-world', done: false },
+      { text: 'Render OpenStreetMap base layer', done: false },
+      { text: 'Write first ingest script (GHMC wards → PostGIS)', done: false },
+    ]
+  },
+  {
+    name: 'Sprint 2 — Map viewer',
+    date: 'Jul 8 – Jul 21, 2026',
+    tasks: [
+      { text: 'Serve PostGIS tiles via edge function', done: false },
+      { text: 'Add official land-use layer toggle', done: false },
+      { text: 'Implement NDWI raster overlay', done: false },
+      { text: 'Responsive layout, mobile-friendly', done: false },
+      { text: 'Deploy frontend to Vercel', done: false },
+    ]
+  },
+  {
+    name: 'Sprint 3 — Report flow',
+    date: 'Jul 22 – Aug 4, 2026',
+    tasks: [
+      { text: 'Auth: anonymous + magic link via Supabase', done: false },
+      { text: 'Report form with GPS + photo upload', done: false },
+      { text: 'Pending/verified layer on map', done: false },
+      { text: 'Community upvote (RLS-gated)', done: false },
+      { text: 'Basic /verify queue page', done: false },
+    ]
+  }
+];
+
+const STORE_KEY = 'htmap_learning_v1';
+let state = JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || {
+  sprintIdx: 0,
+  tasks: sprints.map(s => s.tasks.map(t => t.done)),
+  notes: []
+};
+
+function save() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+
+function renderSprint() {
+  const s = sprints[state.sprintIdx];
+  const td = state.tasks[state.sprintIdx];
+  document.getElementById('sName').textContent = s.name;
+  document.getElementById('sDate').textContent = s.date;
+  const done = td.filter(Boolean).length;
+  const pct = Math.round(done / td.length * 100);
+  document.getElementById('sBar').style.width = pct + '%';
+  document.getElementById('sProgress').textContent = done + ' of ' + td.length + ' done';
+  const ul = document.getElementById('sTaskList');
+  ul.innerHTML = '';
+  s.tasks.forEach((t, i) => {
+    const li = document.createElement('li');
+    li.className = 'sprint-task' + (td[i] ? ' done' : '');
+    li.innerHTML = '<span class="task-check"></span><span>' + t.text + '</span>';
+    li.onclick = () => { td[i] = !td[i]; save(); renderSprint(); updateStats(); };
+    ul.appendChild(li);
+  });
+  document.getElementById('sprintSel').value = state.sprintIdx;
+}
+
+function renderFeed() {
+  const feed = document.getElementById('noteFeed');
+  feed.innerHTML = '';
+  const notes = [...state.notes].reverse();
+  if (notes.length === 0) {
+    feed.innerHTML = '<p style="font-size:13px;color:var(--hint);padding:1rem 0">No notes yet. Add the first one below.</p>';
+    return;
+  }
+  notes.forEach(n => {
+    const d = document.createElement('div');
+    d.className = 'note-item';
+    d.innerHTML = '<div class="note-meta"><span class="note-date">' + n.date + '</span><span class="note-tag">' + n.tag + '</span></div><div class="note-body">' + n.text.replace(/</g, '&lt;').replace(/\n/g, '<br>') + '</div>';
+    feed.appendChild(d);
+  });
+}
+
+function addNote() {
+  const txt = document.getElementById('noteInput').value.trim();
+  if (!txt) return;
+  const tag = document.getElementById('tagSel').value;
+  const now = new Date();
+  const date = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  state.notes.push({ date, tag, text: txt });
+  save(); renderFeed(); updateStats();
+  document.getElementById('noteInput').value = '';
+}
+
+function switchSprint(v) { state.sprintIdx = +v; save(); renderSprint(); }
+
+function updateStats() {
+  document.getElementById('totalNotes').textContent = state.notes.length;
+  const allDone = state.tasks.flat().filter(Boolean).length;
+  document.getElementById('totalDone').textContent = allDone;
+  const start = new Date('2026-06-24');
+  const today = new Date();
+  const diff = Math.max(1, Math.round((today - start) / 86400000) + 1);
+  document.getElementById('daysIn').textContent = diff;
+}
+
+document.getElementById('noteInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) addNote();
+});
+
+renderSprint();
+renderFeed();
+updateStats();
+</script>
+</body>
+</html>
